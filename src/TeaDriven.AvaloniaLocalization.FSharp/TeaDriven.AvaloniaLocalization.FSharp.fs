@@ -7,9 +7,8 @@ open System.Xml.Linq
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
-// Put any utility helpers here
 [<AutoOpen>]
-module internal Helpers =
+module internal Internal =
     let getLocKeys xaml =
         let systemNamespaceString = "clr-namespace:System;assembly=System.Runtime"
         let stringElementName = "String"
