@@ -7,7 +7,7 @@ open System.Xml.Linq
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
-open TeaDriven.AvaloniaLocalization.FSharp.Runtime
+// open TeaDriven.AvaloniaLocalization.FSharp.Runtime
 
 // Put any utility helpers here
 [<AutoOpen>]
@@ -39,7 +39,7 @@ type LocalizationKeyProvider (config : TypeProviderConfig) as this =
     let asm = Assembly.GetExecutingAssembly()
 
     // check we contain a copy of runtime files, and are not referencing the runtime DLL
-    do assert (typeof<DataSource>.Assembly.GetName().Name = asm.GetName().Name)
+    // do assert (typeof<DataSource>.Assembly.GetName().Name = asm.GetName().Name)
 
     let createType typeName (xamlFileName: string) =
         let asm = ProvidedAssembly()
@@ -60,3 +60,6 @@ type LocalizationKeyProvider (config : TypeProviderConfig) as this =
         t
     do
         this.AddNamespace(ns, [myParamType])
+
+[<assembly:TypeProviderAssembly>]
+do ()

@@ -16,7 +16,6 @@
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="..\TeaDriven.AvaloniaLocalization.FSharp.Runtime\TeaDriven.AvaloniaLocalization.FSharp.Runtime.fs" />
     <Compile Include="TeaDriven.AvaloniaLocalization.FSharp.DesignTime.fs" />
     <None Include="paket.references" />
   </ItemGroup>
