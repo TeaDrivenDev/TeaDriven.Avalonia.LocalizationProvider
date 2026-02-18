@@ -1,4 +1,4 @@
-namespace MyNamespace
+namespace TeaDriven.AvaloniaLocalization.FSharp.Runtime
 
 open FSharp.Core.CompilerServices
 
