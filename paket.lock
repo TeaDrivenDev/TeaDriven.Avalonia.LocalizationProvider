@@ -1,10 +1,10 @@
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (4.7.2)
+    FSharp.Core (8.0.403)
 GITHUB
   remote: fsprojects/FSharp.TypeProviders.SDK
-    src/ProvidedTypes.fs (6a9f05e53e334a7d9c55f3be59535323b8ddfaf9)
-    src/ProvidedTypes.fsi (6a9f05e53e334a7d9c55f3be59535323b8ddfaf9)
+    src/ProvidedTypes.fs (ce34c1cc71096857b8342f1dedf93391addc9df6)
+    src/ProvidedTypes.fsi (ce34c1cc71096857b8342f1dedf93391addc9df6)
 GROUP Test
 NUGET
   remote: https://api.nuget.org/v3/index.json
