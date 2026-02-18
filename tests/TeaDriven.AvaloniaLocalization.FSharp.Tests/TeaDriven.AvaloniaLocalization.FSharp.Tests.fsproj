@@ -8,7 +8,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TeaDriven.AvaloniaLocalization.FSharp.Runtime\TeaDriven.AvaloniaLocalization.FSharp.Runtime.fsproj" />
+    <ProjectReference Include="..\..\src\TeaDriven.AvaloniaLocalization.FSharp.DesignTime\TeaDriven.AvaloniaLocalization.FSharp.DesignTime.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
