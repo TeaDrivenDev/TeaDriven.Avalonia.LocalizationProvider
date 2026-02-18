@@ -12,6 +12,7 @@
     <Compile Include="TeaDriven.AvaloniaLocalization.FSharp.Runtime.fs" />
     <Compile Include="TypeProviderAssembly.fs" />
     <None Include="paket.references" />
+    <None Include="XamlParsing.fsx" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.2" />
