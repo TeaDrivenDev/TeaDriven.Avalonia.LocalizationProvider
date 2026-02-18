@@ -1,0 +1,44 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.AvaloniaLocalization.FSharp.Runtime", "src\TeaDriven.AvaloniaLocalization.FSharp.Runtime\TeaDriven.AvaloniaLocalization.FSharp.Runtime.fsproj", "{47D2E38E-CED5-4EB7-91AB-E3AC4E482686}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.AvaloniaLocalization.FSharp.DesignTime", "src\TeaDriven.AvaloniaLocalization.FSharp.DesignTime\TeaDriven.AvaloniaLocalization.FSharp.DesignTime.fsproj", "{646EA7B8-09DE-4AE9-8EDD-D1773629012F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD-2B06-4030-9F0F-DC548F98E1C4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.AvaloniaLocalization.FSharp.Tests", "tests\TeaDriven.AvaloniaLocalization.FSharp.Tests\TeaDriven.AvaloniaLocalization.FSharp.Tests.fsproj", "{CDED802E-3A4F-49ED-B12F-EB2976033A3D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47D2E38E-CED5-4EB7-91AB-E3AC4E482686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D2E38E-CED5-4EB7-91AB-E3AC4E482686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D2E38E-CED5-4EB7-91AB-E3AC4E482686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D2E38E-CED5-4EB7-91AB-E3AC4E482686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646EA7B8-09DE-4AE9-8EDD-D1773629012F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646EA7B8-09DE-4AE9-8EDD-D1773629012F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646EA7B8-09DE-4AE9-8EDD-D1773629012F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646EA7B8-09DE-4AE9-8EDD-D1773629012F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDED802E-3A4F-49ED-B12F-EB2976033A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDED802E-3A4F-49ED-B12F-EB2976033A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDED802E-3A4F-49ED-B12F-EB2976033A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDED802E-3A4F-49ED-B12F-EB2976033A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CDED802E-3A4F-49ED-B12F-EB2976033A3D} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
+	EndGlobalSection
+EndGlobal
