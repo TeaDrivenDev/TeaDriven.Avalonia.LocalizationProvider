@@ -7,8 +7,6 @@ open System.Xml.Linq
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
-// open TeaDriven.AvaloniaLocalization.FSharp.Runtime
-
 // Put any utility helpers here
 [<AutoOpen>]
 module internal Helpers =
@@ -33,13 +31,10 @@ module internal Helpers =
 
 [<TypeProvider>]
 type LocalizationKeyProvider (config : TypeProviderConfig) as this =
-    inherit TypeProviderForNamespaces (config, assemblyReplacementMap=[("TeaDriven.AvaloniaLocalization.FSharp.DesignTime", "TeaDriven.AvaloniaLocalization.FSharp.Runtime")])
+    inherit TypeProviderForNamespaces (config)
 
     let ns = "TeaDriven.AvaloniaLocalization.FSharp"
     let asm = Assembly.GetExecutingAssembly()
-
-    // check we contain a copy of runtime files, and are not referencing the runtime DLL
-    // do assert (typeof<DataSource>.Assembly.GetName().Name = asm.GetName().Name)
 
     let createType typeName (xamlFileName: string) =
         let asm = ProvidedAssembly()
