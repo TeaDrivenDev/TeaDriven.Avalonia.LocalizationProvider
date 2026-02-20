@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <!-- This allows the component to execute from 'bin' directory during build -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <RootNamespace>TeaDriven.AvaloniaLocalization.FSharp.DesignTime</RootNamespace>
+    <RootNamespace>TeaDriven.AvaloniaLocalization.FSharp</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
@@ -27,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     -->
-    <PackageReference Update="FSharp.Core" Version="4.7.2">
+    <PackageReference Update="FSharp.Core" Version="8.0.403">
       <!-- This excludes FSharp.Core.xml and FSharp.Core.resources.dll while referencing the right FSharp.Core.dll version -->
       <ExcludeAssets>runtime;contentFiles</ExcludeAssets>
     </PackageReference>
