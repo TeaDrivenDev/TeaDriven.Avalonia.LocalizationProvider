@@ -7,7 +7,6 @@ open System.Xml.Linq
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
-[<AutoOpen>]
 module internal Internal =
     let getLocKeys xaml =
         let systemNamespaceString = "clr-namespace:System;assembly=System.Runtime"
@@ -44,7 +43,7 @@ type LocalizationKeyProvider (config : TypeProviderConfig) as this =
             then xamlFileName
             else Path.Combine(config.ResolutionFolder, xamlFileName)
 
-        let locKeys = File.ReadAllText path |> getLocKeys
+        let locKeys = File.ReadAllText path |> Internal.getLocKeys
         for key in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
             myType.AddMember(prop)
