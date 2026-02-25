@@ -28,15 +28,15 @@ module internal Internal =
         |> Seq.toList
 
 [<TypeProvider>]
-type LocalizationKeyProvider (config : TypeProviderConfig) as this =
-    inherit TypeProviderForNamespaces (config)
+type LocalizationKeyProvider(config: TypeProviderConfig) as this =
+    inherit TypeProviderForNamespaces(config)
 
-    let ns = "TeaDriven.AvaloniaLocalization.FSharp"
-    let asm = Assembly.GetExecutingAssembly()
+    let nameSpace = this.GetType().Namespace
+    let assembly = Assembly.GetExecutingAssembly()
 
     let createType typeName (xamlFileName: string) =
-        let asm = ProvidedAssembly()
-        let myType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>, isErased=false)
+        let providedAssembly = ProvidedAssembly()
+        let providedType = ProvidedTypeDefinition(providedAssembly, nameSpace, typeName, Some typeof<obj>, isErased=false)
 
         let path =
             if Path.IsPathRooted xamlFileName
@@ -46,18 +46,18 @@ type LocalizationKeyProvider (config : TypeProviderConfig) as this =
         let locKeys = File.ReadAllText path |> Internal.getLocKeys
         for key in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
-            myType.AddMember(prop)
+            providedType.AddMember(prop)
 
-        asm.AddTypes [ myType ]
+        providedAssembly.AddTypes [ providedType ]
 
-        myType
+        providedType
 
     let myParamType =
-        let t = ProvidedTypeDefinition(asm, ns, "LocKeys", Some typeof<obj>, isErased=false)
+        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeys", Some typeof<obj>, isErased=false)
         t.DefineStaticParameters( [ProvidedStaticParameter("FileName", typeof<string>)], fun typeName args -> createType typeName (unbox<string> args.[0]))
         t
     do
-        this.AddNamespace(ns, [myParamType])
+        this.AddNamespace(nameSpace, [myParamType])
 
 [<assembly:TypeProviderAssembly>]
 do ()
