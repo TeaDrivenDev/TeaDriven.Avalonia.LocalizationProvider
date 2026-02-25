@@ -27,6 +27,8 @@ module internal Internal =
         |> Seq.map (fun (element: XElement) -> element.Attribute(qualifiedKeyAttributeName).Value)
         |> Seq.toList
 
+type Mode = Flat | SimpleSplit
+
 [<TypeProvider>]
 type LocalizationKeyProvider(config: TypeProviderConfig) as this =
     inherit TypeProviderForNamespaces(config)
@@ -34,7 +36,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
     let nameSpace = this.GetType().Namespace
     let assembly = Assembly.GetExecutingAssembly()
 
-    let createType typeName (xamlFileName: string) =
+    let createType typeName (xamlFileName: string) mode =
         let providedAssembly = ProvidedAssembly()
         let providedType = ProvidedTypeDefinition(providedAssembly, nameSpace, typeName, Some typeof<obj>, isErased=false)
 
@@ -54,7 +56,17 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
     let myParamType =
         let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeys", Some typeof<obj>, isErased=false)
-        t.DefineStaticParameters( [ProvidedStaticParameter("FileName", typeof<string>)], fun typeName args -> createType typeName (unbox<string> args.[0]))
+
+        let parameters =
+            [
+                ProvidedStaticParameter("FileName", typeof<string>)
+                ProvidedStaticParameter("Mode", typeof<Mode>)
+            ]
+
+        t.DefineStaticParameters(
+            parameters,
+            fun typeName args -> createType typeName (unbox<string> args[0]) (unbox<Mode> args[1]))
+
         t
     do
         this.AddNamespace(nameSpace, [myParamType])
