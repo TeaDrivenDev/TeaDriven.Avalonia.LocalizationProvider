@@ -39,7 +39,12 @@ type LocalizationKeyProvider (config : TypeProviderConfig) as this =
         let asm = ProvidedAssembly()
         let myType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>, isErased=false)
 
-        let locKeys = File.ReadAllText xamlFileName |> getLocKeys
+        let path =
+            if Path.IsPathRooted xamlFileName
+            then xamlFileName
+            else Path.Combine(config.ResolutionFolder, xamlFileName)
+
+        let locKeys = File.ReadAllText path |> getLocKeys
         for key in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
             myType.AddMember(prop)
