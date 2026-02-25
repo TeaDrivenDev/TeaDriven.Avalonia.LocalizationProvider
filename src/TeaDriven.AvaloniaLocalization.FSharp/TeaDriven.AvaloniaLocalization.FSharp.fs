@@ -24,7 +24,7 @@ module internal Internal =
         let qualifiedKeyAttributeName = xamlNamespace + keyAttributeName
 
         document.Root.Descendants(qualifiedStringElementName)
-        |> Seq.map (fun (element: XElement) -> element.Attribute(qualifiedKeyAttributeName).Value)
+        |> Seq.map (fun (element: XElement) -> element.Attribute(qualifiedKeyAttributeName).Value, element.Value)
         |> Seq.toList
 
 type Mode = Flat | SimpleSplit
@@ -46,7 +46,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
             else Path.Combine(config.ResolutionFolder, xamlFileName)
 
         let locKeys = File.ReadAllText path |> Internal.getLocKeys
-        for key in locKeys do
+        for key, _ in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
             providedType.AddMember(prop)
 
