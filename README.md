@@ -33,7 +33,7 @@ let locString key =
 this is used as such:
 
 ```fsharp
-let message = String.Format(locString Loc.FileLoadedMessage, fileName)
+let message = String.Format(locString Loc.LocFileLoadedMessage, fileName)
 ```
 
 ---
