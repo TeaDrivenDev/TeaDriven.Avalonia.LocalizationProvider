@@ -50,8 +50,9 @@ module internal Internal =
                 |})
 
     let createFlatMembers _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
-        for key, _ in locKeys do
+        for key, locString in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
+            prop.AddXmlDoc(locString)
             providedType.AddMember(prop)
 
     let createSimpleSplitMembers
@@ -67,6 +68,7 @@ module internal Internal =
             for item in group.Items do
                 let completeKey = item.CompleteKey
                 let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = (fun args -> <@@ completeKey @@>))
+                prop.AddXmlDoc(item.LocString)
 
                 subType.AddMember(prop)
 
