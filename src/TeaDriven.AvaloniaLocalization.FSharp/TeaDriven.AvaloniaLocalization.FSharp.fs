@@ -7,6 +7,7 @@ open System.Xml.Linq
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
+[<RequireQualifiedAccess>]
 module internal Internal =
     let getLocKeys xaml =
         let systemNamespaceString = "clr-namespace:System;assembly=System.Runtime"
@@ -27,7 +28,7 @@ module internal Internal =
         |> Seq.map (fun (element: XElement) -> element.Attribute(qualifiedKeyAttributeName).Value, element.Value)
         |> Seq.toList
 
-    let simpleSplit locKeys =
+    let getSimpleSplit locKeys =
         locKeys
         |> List.map
             (fun (locKey: string, locString: string) ->
@@ -48,7 +49,30 @@ module internal Internal =
                                 |})
                 |})
 
-type Mode = Flat | SimpleSplit
+    let createFlatMembers _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
+        for key, _ in locKeys do
+            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
+            providedType.AddMember(prop)
+
+    let createSimpleSplitMembers
+        (providedAssembly: ProvidedAssembly)
+        (nameSpace: string)
+        (providedType: ProvidedTypeDefinition)
+        (locKeys: (string * string) list) =
+        let data = getSimpleSplit locKeys
+
+        for group in data do
+            let subType = ProvidedTypeDefinition(providedAssembly, nameSpace, group.Prefix, Some typeof<obj>, isErased=false)
+
+            for item in group.Items do
+                let completeKey = item.CompleteKey
+                let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = (fun args -> <@@ completeKey @@>))
+
+                subType.AddMember(prop)
+
+            providedType.AddMember subType
+            let subTypeProperty = ProvidedProperty(group.Prefix, subType, getterCode = (fun args -> <@@ subType @@>), isStatic = true)
+            providedType.AddMember(subTypeProperty)
 
 [<TypeProvider>]
 type LocalizationKeyProvider(config: TypeProviderConfig) as this =
@@ -57,7 +81,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
     let nameSpace = this.GetType().Namespace
     let assembly = Assembly.GetExecutingAssembly()
 
-    let createType typeName (xamlFileName: string) mode =
+    let createType typeName (xamlFileName: string) createMembers =
         let providedAssembly = ProvidedAssembly()
         let providedType = ProvidedTypeDefinition(providedAssembly, nameSpace, typeName, Some typeof<obj>, isErased=false)
 
@@ -68,26 +92,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         let locKeys = File.ReadAllText path |> Internal.getLocKeys
 
-        match mode with
-        | Flat ->
-            for key, _ in locKeys do
-                let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
-                providedType.AddMember(prop)
-        | SimpleSplit ->
-            let data = Internal.simpleSplit locKeys
-
-            for group in data do
-                let subType = ProvidedTypeDefinition(providedAssembly, nameSpace, group.Prefix, Some typeof<obj>, isErased=false)
-
-                for item in group.Items do
-                    let completeKey = item.CompleteKey
-                    let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = (fun args -> <@@ completeKey @@>))
-
-                    subType.AddMember(prop)
-
-                providedType.AddMember subType
-                let subTypeProperty = ProvidedProperty(group.Prefix, subType, getterCode = (fun args -> <@@ subType @@>), isStatic = true)
-                providedType.AddMember(subTypeProperty)
+        createMembers providedAssembly nameSpace providedType locKeys
 
         providedAssembly.AddTypes [ providedType ]
 
@@ -98,7 +103,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         t.DefineStaticParameters(
             [ ProvidedStaticParameter("FileName", typeof<string>) ],
-            fun typeName args -> createType typeName (unbox<string> args[0]) Flat)
+            fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createFlatMembers)
 
         t
 
@@ -107,7 +112,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         t.DefineStaticParameters(
             [ ProvidedStaticParameter("FileName", typeof<string>) ],
-            fun typeName args -> createType typeName (unbox<string> args[0]) SimpleSplit)
+            fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createSimpleSplitMembers)
 
         t
 
