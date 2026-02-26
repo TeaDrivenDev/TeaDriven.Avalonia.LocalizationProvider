@@ -27,6 +27,27 @@ module internal Internal =
         |> Seq.map (fun (element: XElement) -> element.Attribute(qualifiedKeyAttributeName).Value, element.Value)
         |> Seq.toList
 
+    let simpleSplit locKeys =
+        locKeys
+        |> List.map
+            (fun (locKey: string, locString: string) ->
+                locKey.Split([| '.' |], 2), (locKey, locString))
+        |> List.groupBy (fst >> Array.head)
+        |> List.map
+            (fun (prefix, items) ->
+                {|
+                    Prefix = prefix
+                    Items =
+                        items
+                        |> List.map
+                            (fun (keyParts, (completeKey, locString)) ->
+                                {|
+                                    PartialKey = keyParts[1]
+                                    CompleteKey = completeKey
+                                    LocString = locString
+                                |})
+                |})
+
 type Mode = Flat | SimpleSplit
 
 [<TypeProvider>]
@@ -46,30 +67,52 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
             else Path.Combine(config.ResolutionFolder, xamlFileName)
 
         let locKeys = File.ReadAllText path |> Internal.getLocKeys
-        for key, _ in locKeys do
-            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
-            providedType.AddMember(prop)
+
+        match mode with
+        | Flat ->
+            for key, _ in locKeys do
+                let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
+                providedType.AddMember(prop)
+        | SimpleSplit ->
+            let data = Internal.simpleSplit locKeys
+
+            for group in data do
+                let subType = ProvidedTypeDefinition(providedAssembly, nameSpace, group.Prefix, Some typeof<obj>, isErased=false)
+
+                for item in group.Items do
+                    let completeKey = item.CompleteKey
+                    let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = (fun args -> <@@ completeKey @@>))
+
+                    subType.AddMember(prop)
+
+                providedType.AddMember subType
+                let subTypeProperty = ProvidedProperty(group.Prefix, subType, getterCode = (fun args -> <@@ subType @@>), isStatic = true)
+                providedType.AddMember(subTypeProperty)
 
         providedAssembly.AddTypes [ providedType ]
 
         providedType
 
-    let myParamType =
-        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeys", Some typeof<obj>, isErased=false)
-
-        let parameters =
-            [
-                ProvidedStaticParameter("FileName", typeof<string>)
-                ProvidedStaticParameter("Mode", typeof<Mode>)
-            ]
+    let locKeysFlatType =
+        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysFlat", Some typeof<obj>, isErased=false)
 
         t.DefineStaticParameters(
-            parameters,
-            fun typeName args -> createType typeName (unbox<string> args[0]) (unbox<Mode> args[1]))
+            [ ProvidedStaticParameter("FileName", typeof<string>) ],
+            fun typeName args -> createType typeName (unbox<string> args[0]) Flat)
 
         t
+
+    let locKeysSplitType =
+        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysSimpleSplit", Some typeof<obj>, isErased=false)
+
+        t.DefineStaticParameters(
+            [ ProvidedStaticParameter("FileName", typeof<string>) ],
+            fun typeName args -> createType typeName (unbox<string> args[0]) SimpleSplit)
+
+        t
+
     do
-        this.AddNamespace(nameSpace, [myParamType])
+        this.AddNamespace(nameSpace, [locKeysFlatType; locKeysSplitType])
 
 [<assembly:TypeProviderAssembly>]
 do ()
