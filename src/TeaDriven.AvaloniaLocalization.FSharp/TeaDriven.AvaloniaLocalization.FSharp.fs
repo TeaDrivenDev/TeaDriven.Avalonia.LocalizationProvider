@@ -99,22 +99,22 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
         providedType
 
     let locKeysFlatType =
-        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysFlat", Some typeof<obj>, isErased=false)
+        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysFlat", Some typeof<obj>, isErased=false)
 
-        t.DefineStaticParameters(
+        typeDefinition.DefineStaticParameters(
             [ ProvidedStaticParameter("FileName", typeof<string>) ],
             fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createFlatMembers)
 
-        t
+        typeDefinition
 
     let locKeysSplitType =
-        let t = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysSimpleSplit", Some typeof<obj>, isErased=false)
+        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysSimpleSplit", Some typeof<obj>, isErased=false)
 
-        t.DefineStaticParameters(
+        typeDefinition.DefineStaticParameters(
             [ ProvidedStaticParameter("FileName", typeof<string>) ],
             fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createSimpleSplitMembers)
 
-        t
+        typeDefinition
 
     do
         this.AddNamespace(nameSpace, [locKeysFlatType; locKeysSplitType])
