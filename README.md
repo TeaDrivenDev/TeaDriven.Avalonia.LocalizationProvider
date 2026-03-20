@@ -2,7 +2,7 @@ This is a simple F# type provider intended to provide resource keys for localizi
 
 The type provider reads an `.axaml` file containing a resource dictionary and provides a type with string properties for each of the string resources contained in the file.
 
-Such file would look as follows:
+Such a file would look as follows:
 
 ```xaml
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
@@ -13,13 +13,19 @@ Such file would look as follows:
 </ResourceDictionary>
 ```
 
-The provided type is instantiated with
+There are two different provided types that surface the same information, but present it slightly differently. `LocKeysFlat` generates a simple flat list of all the resources, while `LocKeysSimpleSplit` creates sub-types based on "dot paths" in the names, so e.g. resources prefixed "Loc." and "Log." would be accessed through different properties on the main type based on those names.
+
+The provided types are instantiated with
 
 ```fsharp
-type Loc = LocKeys<"LocStrings.axaml">
+type LocFlat = LocKeysFlat<"LocStrings.axaml">
+```
+or
+```fsharp
+type LocSplit = LocKeysSimpleSplit<"LocStrings.axaml">
 ```
 
-The localization keys can then be accessed through static properties on the `Loc` type.
+The localization keys can then be accessed through static properties on the respective type.
 
 Given a helper function
 
@@ -33,8 +39,13 @@ let locString key =
 this is used as such:
 
 ```fsharp
-let message = String.Format(locString Loc.LocFileLoadedMessage, fileName)
+let message = String.Format(locString LocFlat.LocFileLoadedMessage, fileName)
 ```
+or
+```fsharp
+let message = String.Format(locString LocSplit.Loc.FileLoadedMessage, fileName)
+```
+
 
 ---
 
