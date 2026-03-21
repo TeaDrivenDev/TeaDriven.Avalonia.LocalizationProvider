@@ -4,6 +4,8 @@ open System.IO
 open System.Reflection
 open System.Xml.Linq
 
+open Avalonia
+
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
@@ -49,13 +51,37 @@ module internal Internal =
                                 |})
                 |})
 
-    let createFlatMembers _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
+    let determineGetter returnResources key =
+        if returnResources
+        then
+            (fun args ->
+                <@@
+                    let applicationInstance = Application.Current
+
+                    let methodInfo = typeof<Application>.GetMethod("TryGetResource")
+
+                    // Parameters of Avalonia.Application.TryGetResource()
+                    // key: string, theme: Styling.ThemeVariant, value: byref<obj>
+                    let parameters: obj array = [| key; null; null |]
+
+                    let success = methodInfo.Invoke(applicationInstance, parameters) :?> bool
+
+                    if success
+                    then
+                        // The out value is now at index 2 of the array
+                        parameters[2] :?> string
+                    else "[Localization resource not found]"
+                @@>)
+        else (fun args -> <@@ key @@>)
+
+    let createFlatMembers (returnResources: bool) _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
         for key, locString in locKeys do
-            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = (fun args -> <@@ key @@>), isStatic = true)
+            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = determineGetter returnResources key, isStatic = true)
             prop.AddXmlDoc(locString)
             providedType.AddMember(prop)
 
     let createSimpleSplitMembers
+        (returnResources: bool)
         (providedAssembly: ProvidedAssembly)
         (nameSpace: string)
         (providedType: ProvidedTypeDefinition)
@@ -66,8 +92,7 @@ module internal Internal =
             let subType = ProvidedTypeDefinition(providedAssembly, nameSpace, group.Prefix, Some typeof<obj>, isErased=false)
 
             for item in group.Items do
-                let completeKey = item.CompleteKey
-                let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = (fun args -> <@@ completeKey @@>))
+                let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = determineGetter returnResources item.CompleteKey)
                 prop.AddXmlDoc(item.LocString)
 
                 subType.AddMember(prop)
@@ -104,8 +129,12 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
         let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysFlat", Some typeof<obj>, isErased=false)
 
         typeDefinition.DefineStaticParameters(
-            [ ProvidedStaticParameter("FileName", typeof<string>) ],
-            fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createFlatMembers)
+            [
+                ProvidedStaticParameter("FileName", typeof<string>)
+                ProvidedStaticParameter("ReturnResources", typeof<bool>)
+            ],
+            fun typeName args ->
+                createType typeName (unbox<string> args[0]) (Internal.createFlatMembers (unbox<bool> args[1])))
 
         typeDefinition
 
@@ -114,7 +143,8 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         typeDefinition.DefineStaticParameters(
             [ ProvidedStaticParameter("FileName", typeof<string>) ],
-            fun typeName args -> createType typeName (unbox<string> args[0]) Internal.createSimpleSplitMembers)
+            fun typeName args ->
+                createType typeName (unbox<string> args[0]) (Internal.createSimpleSplitMembers (unbox<bool> args[1])))
 
         typeDefinition
 
