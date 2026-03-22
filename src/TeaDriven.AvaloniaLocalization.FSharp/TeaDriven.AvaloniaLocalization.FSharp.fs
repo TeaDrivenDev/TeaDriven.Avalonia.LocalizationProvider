@@ -77,17 +77,17 @@ module internal Internal =
                 @@>)
         else (fun args -> <@@ key @@>)
 
-    let createFlatMembers (returnMode: ReturnMode) _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
+    let createFlatMembers _ _ (providedType: ProvidedTypeDefinition) (returnMode: ReturnMode) (locKeys: (string * string) list) =
         for key, locString in locKeys do
             let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = determineGetter returnMode key, isStatic = true)
             prop.AddXmlDoc(locString)
             providedType.AddMember(prop)
 
     let createGroupedMembers
-        (returnMode: ReturnMode)
         (providedAssembly: ProvidedAssembly)
         (nameSpace: string)
         (providedType: ProvidedTypeDefinition)
+        (returnMode: ReturnMode)
         (locKeys: (string * string) list) =
         let data = getSimpleSplit locKeys
 
@@ -115,7 +115,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
     let nameSpace = this.GetType().Namespace
     let assembly = Assembly.GetExecutingAssembly()
 
-    let createType typeName (xamlFileName: string) createMembers =
+    let createType typeName xamlFileName returnMode createMembers =
         let providedAssembly = ProvidedAssembly()
         let providedType = ProvidedTypeDefinition(providedAssembly, nameSpace, typeName, Some typeof<obj>, isErased=false)
 
@@ -126,7 +126,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         let locKeys = File.ReadAllText path |> Internal.getLocKeys
 
-        createMembers providedAssembly nameSpace providedType locKeys
+        createMembers providedAssembly nameSpace providedType returnMode locKeys
 
         providedAssembly.AddTypes [ providedType ]
 
@@ -148,10 +148,10 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
                 let createMembers =
                     if listStructure = ListStructure.Flat
-                    then Internal.createFlatMembers returnMode
-                    else Internal.createGroupedMembers returnMode
+                    then Internal.createFlatMembers
+                    else Internal.createGroupedMembers
 
-                createType typeName fileName createMembers)
+                createType typeName fileName returnMode createMembers)
 
         typeDefinition
 
