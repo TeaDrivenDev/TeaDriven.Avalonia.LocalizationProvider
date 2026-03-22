@@ -9,6 +9,8 @@ open Avalonia
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
+type ReturnMode = | Keys = 0 | Values = 1
+
 [<RequireQualifiedAccess>]
 module internal Internal =
     let getLocKeys xaml =
@@ -51,8 +53,8 @@ module internal Internal =
                                 |})
                 |})
 
-    let determineGetter returnResources key =
-        if returnResources
+    let determineGetter returnMode key =
+        if returnMode = ReturnMode.Values
         then
             (fun args ->
                 <@@
@@ -74,14 +76,14 @@ module internal Internal =
                 @@>)
         else (fun args -> <@@ key @@>)
 
-    let createFlatMembers (returnResources: bool) _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
+    let createFlatMembers (returnMode: ReturnMode) _ _ (providedType: ProvidedTypeDefinition) (locKeys: (string * string) list) =
         for key, locString in locKeys do
-            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = determineGetter returnResources key, isStatic = true)
+            let prop = ProvidedProperty(key.Replace(".", ""), typeof<string>, getterCode = determineGetter returnMode key, isStatic = true)
             prop.AddXmlDoc(locString)
             providedType.AddMember(prop)
 
     let createSimpleSplitMembers
-        (returnResources: bool)
+        (returnMode: ReturnMode)
         (providedAssembly: ProvidedAssembly)
         (nameSpace: string)
         (providedType: ProvidedTypeDefinition)
@@ -92,7 +94,11 @@ module internal Internal =
             let subType = ProvidedTypeDefinition(providedAssembly, nameSpace, group.Prefix, Some typeof<obj>, isErased=false)
 
             for item in group.Items do
-                let prop = ProvidedProperty(item.PartialKey.Replace('.', '_'), typeof<string>, getterCode = determineGetter returnResources item.CompleteKey)
+                let prop =
+                    ProvidedProperty(
+                        item.PartialKey.Replace('.', '_'),
+                        typeof<string>,
+                        getterCode = determineGetter returnMode item.CompleteKey)
                 prop.AddXmlDoc(item.LocString)
 
                 subType.AddMember(prop)
@@ -131,10 +137,10 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
         typeDefinition.DefineStaticParameters(
             [
                 ProvidedStaticParameter("FileName", typeof<string>)
-                ProvidedStaticParameter("ReturnResources", typeof<bool>)
+                ProvidedStaticParameter("ReturnMode", typeof<ReturnMode>)
             ],
             fun typeName args ->
-                createType typeName (unbox<string> args[0]) (Internal.createFlatMembers (unbox<bool> args[1])))
+                createType typeName (unbox<string> args[0]) (Internal.createFlatMembers (unbox<ReturnMode> args[1])))
 
         typeDefinition
 
@@ -142,9 +148,12 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
         let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysSimpleSplit", Some typeof<obj>, isErased=false)
 
         typeDefinition.DefineStaticParameters(
-            [ ProvidedStaticParameter("FileName", typeof<string>) ],
+            [
+                ProvidedStaticParameter("FileName", typeof<string>)
+                ProvidedStaticParameter("ReturnMode", typeof<ReturnMode>)
+            ],
             fun typeName args ->
-                createType typeName (unbox<string> args[0]) (Internal.createSimpleSplitMembers (unbox<bool> args[1])))
+                createType typeName (unbox<string> args[0]) (Internal.createSimpleSplitMembers (unbox<ReturnMode> args[1])))
 
         typeDefinition
 
