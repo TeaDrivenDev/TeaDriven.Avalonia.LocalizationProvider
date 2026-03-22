@@ -132,8 +132,8 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         providedType
 
-    let locKeysType =
-        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeys", Some typeof<obj>, isErased=false)
+    let localizationType =
+        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "Localization", Some typeof<obj>, isErased=false)
 
         typeDefinition.DefineStaticParameters(
             [
@@ -156,7 +156,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
         typeDefinition
 
     do
-        this.AddNamespace(nameSpace, [locKeysType])
+        this.AddNamespace(nameSpace, [ localizationType ])
 
 [<assembly:TypeProviderAssembly>]
 do ()
