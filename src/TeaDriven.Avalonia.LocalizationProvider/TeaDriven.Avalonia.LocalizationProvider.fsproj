@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <!-- This allows the component to execute from 'bin' directory during build -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <RootNamespace>TeaDriven.AvaloniaLocalization.FSharp</RootNamespace>
+    <RootNamespace>TeaDriven.Avalonia.LocalizationProvider</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
@@ -16,7 +16,7 @@
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="TeaDriven.AvaloniaLocalization.FSharp.fs" />
+    <Compile Include="LocalizationProvider.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

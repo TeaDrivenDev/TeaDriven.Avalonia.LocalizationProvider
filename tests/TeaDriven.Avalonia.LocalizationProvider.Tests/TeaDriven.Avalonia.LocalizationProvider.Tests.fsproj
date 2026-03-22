@@ -4,11 +4,11 @@
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="TeaDriven.AvaloniaLocalization.FSharp.Tests.fs" />
+    <Compile Include="TeaDriven.Avalonia.LocalizationProvider.Tests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TeaDriven.AvaloniaLocalization.FSharp\TeaDriven.AvaloniaLocalization.FSharp.fsproj" />
+    <ProjectReference Include="..\..\src\TeaDriven.Avalonia.LocalizationProvider\TeaDriven.Avalonia.LocalizationProvider.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

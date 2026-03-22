@@ -1,4 +1,4 @@
-namespace TeaDriven.AvaloniaLocalization.FSharp
+namespace TeaDriven.Avalonia.LocalizationProvider
 
 open System.IO
 open System.Reflection

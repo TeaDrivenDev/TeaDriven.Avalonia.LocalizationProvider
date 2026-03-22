@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD-2B06-4030-9F0F-DC548F98E1C4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.AvaloniaLocalization.FSharp.Tests", "tests\TeaDriven.AvaloniaLocalization.FSharp.Tests\TeaDriven.AvaloniaLocalization.FSharp.Tests.fsproj", "{CDED802E-3A4F-49ED-B12F-EB2976033A3D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.Avalonia.LocalizationProvider.Tests", "tests\TeaDriven.Avalonia.LocalizationProvider.Tests\TeaDriven.Avalonia.LocalizationProvider.Tests.fsproj", "{CDED802E-3A4F-49ED-B12F-EB2976033A3D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.AvaloniaLocalization.FSharp", "src\TeaDriven.AvaloniaLocalization.FSharp\TeaDriven.AvaloniaLocalization.FSharp.fsproj", "{120142F6-E216-4E7F-9290-665692319AC0}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TeaDriven.Avalonia.LocalizationProvider", "src\TeaDriven.Avalonia.LocalizationProvider\TeaDriven.Avalonia.LocalizationProvider.fsproj", "{120142F6-E216-4E7F-9290-665692319AC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{669ED78B-9846-4F66-BD1E-8D4DA444A1FB}"
 	ProjectSection(SolutionItems) = preProject
