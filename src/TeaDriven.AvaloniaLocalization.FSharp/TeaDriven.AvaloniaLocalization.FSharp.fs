@@ -109,7 +109,7 @@ module internal Internal =
             providedType.AddMember(subTypeProperty)
 
 [<TypeProvider>]
-type LocalizationKeyProvider(config: TypeProviderConfig) as this =
+type LocalizationProvider(config: TypeProviderConfig) as this =
     inherit TypeProviderForNamespaces(config)
 
     let nameSpace = this.GetType().Namespace
