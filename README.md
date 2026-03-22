@@ -1,4 +1,4 @@
-# TeaDrivenDev.Avalonia.LocalizationProvider
+# TeaDriven.Avalonia.LocalizationProvider
 
 This is a simple F# type provider to help with localizing Avalonia applications that are safe with respect to changes in the resource file.
 
