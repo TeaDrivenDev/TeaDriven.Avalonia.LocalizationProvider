@@ -1,4 +1,6 @@
-This is a simple F# type provider intended to provide resource keys for localizing Avalonia applications that are safe with respect to changes in the resource file.
+# TeaDrivenDev.AvaloniaLocalization.FSharp
+
+This is a simple F# type provider to help with localizing Avalonia applications that are safe with respect to changes in the resource file.
 
 The type provider reads an `.axaml` file containing a resource dictionary and provides a type with string properties for each of the string resources contained in the file.
 
@@ -9,25 +11,35 @@ Such a file would look as follows:
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <system:String x:Key="Loc.WindowTitle">Application Main Window</system:String>
-    <system:String x:Key="Loc.FileLoadedMessage">File {0} has been loaded</system:String>
+    <system:String x:Key="Loc.ShowingXFiles.Format">Showing {0} files</system:String>
+    <system:String x:Key="Log.LoadingComplete">LoadingComplete</system:String>
 </ResourceDictionary>
 ```
 
-There are two different provided types that surface the same information, but present it slightly differently. `LocKeysFlat` generates a simple flat list of all the resources, while `LocKeysSimpleSplit` creates sub-types based on "dot paths" in the names, so e.g. resources prefixed "Loc." and "Log." would be accessed through different properties on the main type based on those names.
+The provided type `Localization` has three parameters:
+- `FileName` is the Avalonia XAML file used to determine the available localization string resources. The path must be relative to the code file in which the provided type is instantiated.
+- `ListStructure` determines the type structure in which the resources are presented.
+  - `ListStructure.Flat` presents all of the resources in a single flat list, with all dots removed from the names.
+    - In the above example, the localization type would have the properties `LocWindowTitle`, `LocShowingXFilesFormat`, and `LogLoadingComplete`.
+  - `ListStructure.Grouped` groups the resources by the part before the first dot, with all subsequent dots replaced by underscores. This allows for a better logical organization of a non-trivial number of string resources.
+    - In the above example, the localization type would have two properties:
+      - `Loc` with sub-properties `WindowTitle` and `ShowingXFiles_Format`
+      - `Log` with sub-property `LoadingComplete`
+- `ReturnMode` determines whether the properties return the resource keys or the actual current resource values.
+  - `ReturnMode.Keys` causes the resource keys to be returned.
+  - `ReturnMode.Values` causes the resource values to be returned.
 
-The provided types are instantiated with
+The recommended parameterization is using `ListStructure.Grouped` and `ReturnMode.Values`:
 
 ```fsharp
-type LocFlat = LocKeysFlat<"LocStrings.axaml">
+type Loc = LocKeysFlat< @"Localization\LocStrings.axaml", ListStructure.Grouped, ReturnMode.Values >
 ```
-or
+This is used as such:
 ```fsharp
-type LocSplit = LocKeysSimpleSplit<"LocStrings.axaml">
+let message = String.Format(Loc.Loc.ShowingXFiles_Format, numberOfFiles)
 ```
 
-The localization keys can then be accessed through static properties on the respective type.
-
-Given a helper function
+When using `ReturnMode.Keys`, the actual resource values can be retrieved using the following function:
 
 ```fsharp
 let locString key =
@@ -35,17 +47,10 @@ let locString key =
     | true, resource -> resource :?> string
     | false, _ -> failwith "Resource not found"
 ```
-
-this is used as such:
-
+With `ReturnMode.Keys` and e.g. `ListStructure.Flat`, the above usage then becomes:
 ```fsharp
-let message = String.Format(locString LocFlat.LocFileLoadedMessage, fileName)
+let message = String.Format(locString Loc.LocShowingXFilesFormat, numberOfFiles)
 ```
-or
-```fsharp
-let message = String.Format(locString LocSplit.Loc.FileLoadedMessage, fileName)
-```
-
 
 ---
 
