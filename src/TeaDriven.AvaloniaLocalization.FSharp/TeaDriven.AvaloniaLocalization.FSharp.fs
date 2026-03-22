@@ -83,7 +83,7 @@ module internal Internal =
             prop.AddXmlDoc(locString)
             providedType.AddMember(prop)
 
-    let createSimpleSplitMembers
+    let createGroupedMembers
         (returnMode: ReturnMode)
         (providedAssembly: ProvidedAssembly)
         (nameSpace: string)
@@ -149,7 +149,7 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
                 let createMembers =
                     if listStructure = ListStructure.Flat
                     then Internal.createFlatMembers returnMode
-                    else Internal.createSimpleSplitMembers returnMode
+                    else Internal.createGroupedMembers returnMode
 
                 createType typeName fileName createMembers)
 
