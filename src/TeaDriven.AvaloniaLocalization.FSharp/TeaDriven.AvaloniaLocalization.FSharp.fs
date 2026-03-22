@@ -9,6 +9,7 @@ open Avalonia
 open FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
+type ListStructure = | Flat = 0 | Grouped = 1
 type ReturnMode = | Keys = 0 | Values = 1
 
 [<RequireQualifiedAccess>]
@@ -131,34 +132,31 @@ type LocalizationKeyProvider(config: TypeProviderConfig) as this =
 
         providedType
 
-    let locKeysFlatType =
-        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysFlat", Some typeof<obj>, isErased=false)
+    let locKeysType =
+        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeys", Some typeof<obj>, isErased=false)
 
         typeDefinition.DefineStaticParameters(
             [
                 ProvidedStaticParameter("FileName", typeof<string>)
+                ProvidedStaticParameter("ListStructure", typeof<ListStructure>)
                 ProvidedStaticParameter("ReturnMode", typeof<ReturnMode>)
             ],
             fun typeName args ->
-                createType typeName (unbox<string> args[0]) (Internal.createFlatMembers (unbox<ReturnMode> args[1])))
+                let fileName = unbox<string> args[0]
+                let listStructure = unbox<ListStructure> args[1]
+                let returnMode = unbox<ReturnMode> args[2]
 
-        typeDefinition
+                let createMembers =
+                    if listStructure = ListStructure.Flat
+                    then Internal.createFlatMembers returnMode
+                    else Internal.createSimpleSplitMembers returnMode
 
-    let locKeysSplitType =
-        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "LocKeysSimpleSplit", Some typeof<obj>, isErased=false)
-
-        typeDefinition.DefineStaticParameters(
-            [
-                ProvidedStaticParameter("FileName", typeof<string>)
-                ProvidedStaticParameter("ReturnMode", typeof<ReturnMode>)
-            ],
-            fun typeName args ->
-                createType typeName (unbox<string> args[0]) (Internal.createSimpleSplitMembers (unbox<ReturnMode> args[1])))
+                createType typeName fileName createMembers)
 
         typeDefinition
 
     do
-        this.AddNamespace(nameSpace, [locKeysFlatType; locKeysSplitType])
+        this.AddNamespace(nameSpace, [locKeysType])
 
 [<assembly:TypeProviderAssembly>]
 do ()
