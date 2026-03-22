@@ -16,7 +16,7 @@ Such a file would look as follows:
 </ResourceDictionary>
 ```
 
-The provided type `Localization` has three parameters:
+The provided type `Localizer` has three parameters:
 - `FileName` is the Avalonia XAML file used to determine the available localization string resources. The path must be relative to the code file in which the provided type is instantiated.
 - `ListStructure` determines the type structure in which the resources are presented.
   - `ListStructure.Flat` presents all of the resources in a single flat list, with all dots removed from the names.
@@ -32,7 +32,7 @@ The provided type `Localization` has three parameters:
 The recommended parameterization is using `ListStructure.Grouped` and `ReturnMode.Values`:
 
 ```fsharp
-type Loc = LocKeysFlat< @"Localization\LocStrings.axaml", ListStructure.Grouped, ReturnMode.Values >
+type Loc = Localizer< @"Localization\LocStrings.axaml", ListStructure.Grouped, ReturnMode.Values >
 ```
 This is used as such:
 ```fsharp

@@ -133,7 +133,7 @@ type LocalizationProvider(config: TypeProviderConfig) as this =
         providedType
 
     let localizationType =
-        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "Localization", Some typeof<obj>, isErased=false)
+        let typeDefinition = ProvidedTypeDefinition(assembly, nameSpace, "Localizer", Some typeof<obj>, isErased=false)
 
         typeDefinition.DefineStaticParameters(
             [
