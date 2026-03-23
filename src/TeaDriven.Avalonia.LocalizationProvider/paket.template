@@ -1,0 +1,11 @@
+type project
+authors
+    TeaDrivenDev
+tags
+    F# fsharp typeproviders avalonia localization
+projectUrl
+    https://github.com/TeaDrivenDev/TeaDriven.Avalonia.LocalizationProvider
+// licenseUrl
+//     https://github.com/fsprojects/FSharp.Text.RegexProvider/blob/master/LICENSE.txt
+copyright
+	Copyright 2026 TeaDrivenDev

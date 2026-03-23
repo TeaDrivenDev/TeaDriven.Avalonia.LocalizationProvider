@@ -18,6 +18,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="LocalizationProvider.fs" />
     <None Include="paket.references" />
+    <None Include="paket.template" />
   </ItemGroup>
   <ItemGroup>
    <!--
