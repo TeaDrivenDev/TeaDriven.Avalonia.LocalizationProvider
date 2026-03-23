@@ -1,5 +1,6 @@
 source https://api.nuget.org/v3/index.json
 
+nuget Avalonia
 nuget FSharp.Core
 
 # These lines are used by Paket to get the latest version of the Type Provider SDK files
