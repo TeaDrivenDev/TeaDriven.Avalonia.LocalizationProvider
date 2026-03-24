@@ -8,6 +8,7 @@ permissions:
   contents: write
 
 env:
+  UPLOAD_NAME: TeaDriven.Avalonia.LocalizationProvider
   PROJECT_PATH: 'src/TeaDriven.Avalonia.LocalizationProvider/TeaDriven.Avalonia.LocalizationProvider.csproj'
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/nuget
 
@@ -49,6 +50,13 @@ jobs:
           dotnet build -c Release
           dotnet paket pack nuget --version ${{ steps.get-version.outputs.group1 }} --minimum-from-lock-file
           dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --source https://nuget.pkg.github.com/TeaDrivenDev/index.json --api-key ${{ secrets.PUSH_NUGET }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.UPLOAD_NAME }}-${{ steps.get-version.outputs.group1 }}
+          path: ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+          if-no-files-found: error
 
   release-assets:
     name: Attach Release Assets
