@@ -12,6 +12,13 @@ open ProviderImplementation.ProvidedTypes
 type ListStructure = | Flat = 0 | Grouped = 1
 type ReturnMode = | Keys = 0 | Values = 1
 
+[<AutoOpen>]
+module Prelude =
+    let locString key =
+        match Application.Current.TryGetResource(key, null) with
+        | true, resource -> resource :?> string
+        | false, _ -> $"[ERROR: Resource {key} not found]"
+
 [<RequireQualifiedAccess>]
 module internal Internal =
     let getLocKeys xaml =
