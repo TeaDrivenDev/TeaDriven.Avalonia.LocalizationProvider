@@ -5,7 +5,17 @@
     <!-- This allows the component to execute from 'bin' directory during build -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>TeaDriven.Avalonia.LocalizationProvider</RootNamespace>
+    <Authors>TeaDrivenDev</Authors>
+<!--    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+    <Description>F# type provider for Avalonia localization</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/TeaDrivenDev/TeaDriven.Avalonia.LocalizationProvider</RepositoryUrl>
+    <Version>0.1.1</Version>
+
+    <FSharpToolsDirectory>typeproviders</FSharpToolsDirectory>
+    <PackagePath>typeproviders</PackagePath>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\paket-files\fsprojects\FSharp.TypeProviders.SDK\src\ProvidedTypes.fsi">
       <Paket>True</Paket>
@@ -16,6 +26,10 @@
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
     <Compile Include="LocalizationProvider.fs" />
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>
