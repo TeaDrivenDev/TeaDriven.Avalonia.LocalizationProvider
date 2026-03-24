@@ -80,7 +80,7 @@ module internal Internal =
                     then
                         // The out value is now at index 2 of the array
                         parameters[2] :?> string
-                    else "[Localization resource not found]"
+                    else $"[ERROR: Resource {key} not found]"
                 @@>)
         else (fun args -> <@@ key @@>)
 
