@@ -1,0 +1,87 @@
+name: Release TeaDriven.Avalonia.LocalizationProvider
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_PATH: 'src/TeaDriven.Avalonia.LocalizationProvider/TeaDriven.Avalonia.LocalizationProvider.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/nuget
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+
+      - name: Get release version
+        id: get-version
+        uses: KyoriPowered/action-regex-match@v3
+        with:
+          text: ${{ github.event.release.tag_name }}
+          regex: '^v(.+)'
+
+      #      - name: Semantic Release Setup
+#        id: release-setup
+#        run: echo '{"branches":["main"],"plugins":["@semantic-release/commit-analyzer","@semantic-release/release-notes-generator","@semantic-release/github"]}' > .releaserc.json
+#      - name: Semantic Release
+#        id: semantic
+#        uses: cycjimmy/semantic-release-action@v3
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: 'Pack & Publish project'
+#        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          dotnet tool restore
+          dotnet paket restore
+          dotnet build -c Release
+          dotnet paket pack nuget --version ${{ steps.get-version.outputs.group1 }} --min-version-from-lock-file
+          dotnet nuget push ${{ PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --source https://nuget.pkg.github.com/TeaDrivenDev/index.json -k ${{ secrets.GH_TOKEN }}
+
+  release-assets:
+    name: Attach Release Assets
+    if: github.event_name == 'release'
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+#      - name: Add Windows file suffix
+#        run: |
+#          set -euo pipefail
+#          if [ -d "dist/win-x64" ]; then
+#            mv "dist/win-x64" "dist/win-x64-windows.exe"
+#          fi
+#
+#      - name: Zip artifacts
+#        run: |
+#          set -euo pipefail
+#          cd dist
+#          for dir in *; do
+#            if [ -d "$dir" ]; then
+#              zip -r "${dir}.zip" "$dir"
+#            fi
+#          done
+#          ls -al
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.nuget
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
