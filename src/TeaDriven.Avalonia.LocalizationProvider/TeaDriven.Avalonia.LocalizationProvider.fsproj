@@ -15,7 +15,6 @@
       <Paket>True</Paket>
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="LocalizationProvider.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />
