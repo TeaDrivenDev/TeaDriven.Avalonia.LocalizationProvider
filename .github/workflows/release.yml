@@ -48,7 +48,7 @@ jobs:
           dotnet paket restore
           dotnet build -c Release
           dotnet paket pack nuget --version ${{ steps.get-version.outputs.group1 }} --minimum-from-lock-file
-          dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --source https://nuget.pkg.github.com/TeaDrivenDev/index.json -k ${{ secrets.GH_TOKEN }}
+          dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --source https://nuget.pkg.github.com/TeaDrivenDev/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
 
   release-assets:
     name: Attach Release Assets
