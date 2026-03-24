@@ -27,7 +27,7 @@ jobs:
 
       - name: Get release version
         id: get-version
-        uses: KyoriPowered/action-regex-match@v3
+        uses: KyoriPowered/action-regex-match@v5
         with:
           text: ${{ github.event.release.tag_name }}
           regex: '^v(.+)'
